@@ -25,6 +25,7 @@ function parseData(data) {
             value: +data.bpi[i] // convert string to number
         });
     }
+    console.log(arr);
     return arr;
 }
 
@@ -48,15 +49,15 @@ function drawChart(data) {
         .rangeRound([height, 0]);
 
     var line = d3.line()
-        .x((d) => { return x(d.data) })
+        .x((d) => { return x(d.date) })
         .y((d) => { return y(d.value) })
         x.domain(d3.extent(data, (d) => { return d.date }));    //extent returns the min and max value to create the scales.
         y.domain(d3.extent(data, (d) => { return d.value }));
 
     g.append('g')
-        .attr('transform', 'translate(0' + height + ')')
+        .attr('transform', 'translate(0,' + height + ')')
         .call(d3.axisBottom(x))
-        .select('domain')
+        .select('.domain')
         .remove();
 
     g.append('g')
@@ -68,9 +69,16 @@ function drawChart(data) {
         .attr('dy', '0.7em')
         .attr('text-anchor', 'end')
         .text('Price ($)');
-    
-    
-    
 
+    g.append('path')
+        .datum(data)
+        .attr('fill', 'none')
+        .attr('stroke', 'steelblue')
+        .attr('stroke-linejoin', 'round')
+        .attr('stroke-linecap', 'round')
+        .attr('stroke-width', 1.5)
+        .attr('d', line);
+
+    
 }
 
