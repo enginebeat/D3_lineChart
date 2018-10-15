@@ -2,41 +2,22 @@
 var tData = [];
 
 for(var i = 0; i <= 20; i++){
-    tData.push({date: i, value: Math.random() * 10 });
+    tData.push({sampleNumber: i, sampleValue: Math.round( Math.random() * 10 ) });
 }
-console.log(tData);
+//console.log(tData);
 
-const api = 'https://api.coindesk.com/v1/bpi/historical/close.json7start=2017-12-31&end=2018-04-01';
 
 /* 
     Loading Data from the API When DOM Content has been loaded
 */ 
 
 document.addEventListener("DOMContentLoaded", (event) => {
-    fetch(api)
-        .then((response) => { return response.json(); })
-        .then((data) => {
-            console.log(data);
-            var parsedData = parseData(data);
-            console.log(parsedData);
-            drawChart(tData);
-            //drawChart(parsedData);
-        })
-        .catch((err) => { console.log(err); })
+    
+    console.log(tData);
+    drawChart(tData);
+    //drawChart(parsedData);
+        
 });
-
-
-function parseData(data) {
-    var arr = [];
-    for (var i in data.bpi) {
-        arr.push({
-            date: new Date(i), //Date
-            value: +data.bpi[i] // convert string to number
-        });
-    }
-    console.log(arr);
-    return arr;
-}
 
 function drawChart(data) {
     var svgWidth = 600, svgHeight = 400;
@@ -51,23 +32,23 @@ function drawChart(data) {
     var g = svg.append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-    var x = d3.scaleTime()
+    var x = d3.scaleLinear()
         .rangeRound([0, width]);
 
     var y = d3.scaleLinear()
         .rangeRound([height, 0]);
 
     var line = d3.line()
-        .x((d) => { return x(d.date) })
-        .y((d) => { return y(d.value) })
-        x.domain(d3.extent(data, (d) => { return d.date }));    //extent returns the min and max value to create the scales.
-        y.domain(d3.extent(data, (d) => { return d.value }));
+        .x((d) => { return x(d.sampleNumber) })
+        .y((d) => { return y(d.sampleValue) })
+        x.domain(d3.extent(data, (d) => { return d.sampleNumber }));    //extent returns the min and max value to create the scales.
+        y.domain(d3.extent(data, (d) => { return d.sampleValue }));
 
     g.append('g')
         .attr('transform', 'translate(0,' + height + ')')
         .call(d3.axisBottom(x))
-        .select('.domain')
-        .remove();
+        .select('.domain');
+        //.remove();
 
     g.append('g')
         .call(d3.axisLeft(y))
@@ -77,7 +58,7 @@ function drawChart(data) {
         .attr('y', 6)
         .attr('dy', '0.7em')
         .attr('text-anchor', 'end')
-        .text('Price ($)');
+        .text('Value (A)');
 
     g.append('path')
         .datum(data)
@@ -89,4 +70,3 @@ function drawChart(data) {
         .attr('d', line);
 
 }
-
